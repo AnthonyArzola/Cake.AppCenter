@@ -1,0 +1,16 @@
+# User-specific files
+*.suo
+*.user
+*.userprefs
+
+# Build results
+bin/
+obj/
+**/bin/Debug/
+**/bin/Release/
+**/obj/Debug/
+**/obj/Release/
+**/.vs
+
+# NuGet Packages Directory
+packages/
