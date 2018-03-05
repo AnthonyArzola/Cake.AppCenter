@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Data;
-using System.Threading.Tasks;
 
 using Cake.AppCenter.Response;
 using Cake.Core;
@@ -25,7 +24,7 @@ namespace Cake.AppCenter
         /// <param name="settings">App settings object.</param>
         /// <returns>Tuple with success flag and app response object if applicable.</returns>
         [CakeMethodAlias]
-        public static async Task<(bool success, AppResponse response)> CreateApp(this ICakeContext context, string apiToken, AppSettings settings)
+        public static (bool success, AppResponse response) CreateApp(this ICakeContext context, string apiToken, AppSettings settings)
         {
             var token = apiToken ?? context.Environment.GetEnvironmentVariable(ENV_VAR_API_TOKEN);
 
@@ -38,7 +37,7 @@ namespace Cake.AppCenter
                 throw new NoNullAllowedException("App display name is required.");
 
             var appCenterClient = new AppCenterClientApi(token);
-            var result = await appCenterClient.CreateApp(settings);
+            var result = appCenterClient.CreateApp(settings);
 
             if (!result.success)
                 context.Log.Error("Error creating app.");
@@ -53,7 +52,7 @@ namespace Cake.AppCenter
         /// <param name="apiToken">AppCenter API token.</param>
         /// <returns>Tuple with success flag and list of apps if applicable.</returns>
         [CakeMethodAlias]
-        public static async Task<(bool success, List<AppResponse> response)> GetApps(this ICakeContext context, string apiToken)
+        public static (bool success, List<AppResponse> response) GetApps(this ICakeContext context, string apiToken)
         {
             var token = apiToken ?? context.Environment.GetEnvironmentVariable(ENV_VAR_API_TOKEN);
 
@@ -62,7 +61,7 @@ namespace Cake.AppCenter
                 throw new NoNullAllowedException($"AppCenter API token is required. Pass in or set at {ENV_VAR_API_TOKEN}");
 
             var appCenterClient = new AppCenterClientApi(token);
-            var result = await appCenterClient.GetApps();
+            var result = appCenterClient.GetApps();
 
             if (!result.success)
                 context.Log.Error("Error retrieving apps.");
@@ -71,7 +70,7 @@ namespace Cake.AppCenter
         }
 
         [CakeMethodAlias]
-        public static async Task<bool> DeleteApp(this ICakeContext context, string apiToken, string appName, string ownerName)
+        public static bool DeleteApp(this ICakeContext context, string apiToken, string appName, string ownerName)
         {
             var token = apiToken ?? context.Environment.GetEnvironmentVariable(ENV_VAR_API_TOKEN);
 
@@ -82,7 +81,7 @@ namespace Cake.AppCenter
                 throw new NoNullAllowedException("App and Owner name are required.");
 
             var appCenterClient = new AppCenterClientApi(token);
-            var result = await appCenterClient.DeleteApp(appName, ownerName);
+            var result = appCenterClient.DeleteApp(appName, ownerName);
 
             if (!result)
                 context.Log.Error($"Error deleting '{appName}'");

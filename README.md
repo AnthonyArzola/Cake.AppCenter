@@ -19,9 +19,31 @@ Cake.AppCenter
 2. [Create](https://openapi.appcenter.ms/#/account/apps_create) new app (`POST /v0.1/apps`)
 3. [Deleting](https://openapi.appcenter.ms/#/account/apps_delete) app (`DELETE /v0.1/apps/{owner_name}/{app_name}`)
 
+## References
+* Cake.Core v0.26.1
+* Humanizer v2.2.0
+* NewtonSharp v10.0.3
+* RestSharp v106.0.1
+
 ## Sample
 
 To return a list of apps, call `GetApps` in your build.cake script:
 ```csharp
-var result = Cake.AppCenter.GetApps("API_TOKEN");
+Task("GetApps")
+  .Does(() =>
+{
+
+  (bool success, List<Cake.AppCenter.Response.AppResponse> appResponse) result = GetApps("YOUR_API_TOKEN");
+
+  if (result.success)
+  {
+    foreach (var app in result.appResponse)
+    {
+      Information(app.Name);
+    }
+  }
+  else {
+    Warning("Unable to retrieve apps.");
+  }
+});
 ```

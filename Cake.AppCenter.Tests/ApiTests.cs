@@ -1,4 +1,8 @@
-﻿using Cake.AppCenter.Enums;
+﻿using System.Threading.Tasks;
+
+using Cake.AppCenter.Enums;
+using Cake.AppCenter.Response;
+
 using Xunit;
 using Xunit.Abstractions;
 
@@ -17,10 +21,10 @@ namespace Cake.AppCenter.Tests
         }
 
         [Fact]
-        public async void Test_GetApps_Valid_Api_Token()
+        public void Test_GetApps_Valid_Api_Token()
         {
             var client = new AppCenterClientApi(API_TOKEN);
-            var result = await client.GetApps();
+            var result = client.GetApps();
 
             Assert.True(result.success);
 
@@ -34,16 +38,16 @@ namespace Cake.AppCenter.Tests
         }
 
         [Fact]
-        public async void Test_GetApps_Invalid_Api_Token()
+        public void Test_GetApps_Invalid_Api_Token()
         {
             var client = new AppCenterClientApi(API_TOKEN + "a");
-            var (success, response) = await client.GetApps();
+            var (success, response) = client.GetApps();
 
             Assert.True(!success);
         }
 
         [Fact]
-        public async void Test_CreateApp_With_Invalid_Fields()
+        public void Test_CreateApp_With_Invalid_Fields()
         {
             var client = new AppCenterClientApi(API_TOKEN);
 
@@ -56,13 +60,13 @@ namespace Cake.AppCenter.Tests
                 Platform = Platform.UWP.ToString()
             };
 
-            var (success, response) = await client.CreateApp(appSettings);
+            var (success, response) = client.CreateApp(appSettings);
 
             Assert.False(success);
         }
 
         [Fact]
-        public async void Test_CreateApp_With_Valid_Fields()
+        public void Test_CreateApp_With_Valid_Fields()
         {
             var client = new AppCenterClientApi(API_TOKEN);
 
@@ -75,12 +79,18 @@ namespace Cake.AppCenter.Tests
                 Platform = Platform.UWP.ToString()
             };
 
-            var (success, response) = await client.CreateApp(appSettings);
-            Assert.True(success);
-            Assert.True(!string.IsNullOrEmpty(response.AppSecret));
+            var createAppTask = new Task<(bool, AppResponse)>(() => client.CreateApp(appSettings));
+            createAppTask.Start();
 
-            var deleteResult = await client.DeleteApp("TestAppName", OWNER_NAME);
-            Assert.True(deleteResult);
+            Task<bool> deleteAppTask = createAppTask.ContinueWith<bool>(r =>
+            {
+                Assert.True(r.Result.Item1);
+                Assert.True(!string.IsNullOrEmpty(r.Result.Item2.AppSecret));
+
+                return client.DeleteApp(appSettings.Name, OWNER_NAME);
+            });
+
+            Assert.True(deleteAppTask.Result);
         }
        
     }

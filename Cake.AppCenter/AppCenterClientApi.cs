@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Threading.Tasks;
 
 using Cake.AppCenter.Response;
 using RestSharp;
@@ -32,7 +31,7 @@ namespace Cake.AppCenter
         /// Creates a new app and returns it to the caller.
         /// </summary>
         /// <returns>Returns tuple. First </returns>
-        public async Task<(bool success, AppResponse response)> CreateApp(AppSettings settings)
+        public (bool success, AppResponse response) CreateApp(AppSettings settings)
         {
             var request = new RestRequest("/apps", Method.POST);
 
@@ -48,7 +47,7 @@ namespace Cake.AppCenter
 
             try
             {
-                var response = await _restClient.ExecuteTaskAsync(request);
+                var response = _restClient.Execute(request);
 
                 if (response.IsSuccessful && response.StatusCode == HttpStatusCode.Created)
                 {
@@ -77,7 +76,7 @@ namespace Cake.AppCenter
         /// Retrieves a list of available apps.
         /// </summary>
         /// <returns>List of apps.</returns>
-        public async Task<(bool success, List<AppResponse> response)> GetApps()
+        public (bool success, List<AppResponse> response) GetApps()
         {
             var request = new RestRequest("/apps", Method.GET);
 
@@ -87,7 +86,7 @@ namespace Cake.AppCenter
 
             try
             {
-                var response = await _restClient.ExecuteTaskAsync(request);
+                var response = _restClient.Execute(request);
 
                 if (response.IsSuccessful && response.StatusCode == HttpStatusCode.OK)
                 {
@@ -118,7 +117,7 @@ namespace Cake.AppCenter
         /// <param name="appName">Name of the app.</param>
         /// <param name="ownerName">Name of th owner.</param>
         /// <returns>Boolean indicating if request was successful.</returns>
-        public async Task<bool> DeleteApp(string appName, string ownerName)
+        public bool DeleteApp(string appName, string ownerName)
         {
             var request = new RestRequest($"/apps/{ownerName}/{appName}", Method.DELETE);
 
@@ -128,7 +127,7 @@ namespace Cake.AppCenter
 
             try
             {
-                var response = await _restClient.ExecuteTaskAsync(request);
+                var response = _restClient.Execute(request);
                 if (response.IsSuccessful && response.StatusCode == HttpStatusCode.NoContent)
                 {
                     result = true;
