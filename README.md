@@ -3,6 +3,9 @@ Cake.AppCenter
 
 [Cake](https://cakebuild.net/) add-in that facilitates communication with Microsoft’s [AppCenter API](https://docs.microsoft.com/en-us/appcenter/).
 
+# Repo will be deprecated
+Although I had high hopes for this repo, it will be deprecated in favor of [Cake.AppCenter](https://github.com/cake-contrib/Cake.AppCenter) plug-in written and maintained by [Cake-Contrib](https://github.com/cake-contrib) organization.
+
 ## Getting Started
 
 1. Clone repo
